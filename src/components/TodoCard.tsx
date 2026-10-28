@@ -40,6 +40,8 @@ export default function TodoCard({
   onDelete,
 }: Props) {
   const doneCount = todos.filter((t) => t.isDone).length;
+  // 종료된 목표는 묶음 제목으로만 쓰고 선택지에서는 뺀다
+  const activeGoals = goals.filter((g) => g.finishType == null);
 
   return (
     <section className="card">
@@ -63,7 +65,9 @@ export default function TodoCard({
                 <TodoItem
                   key={todo.id}
                   todo={todo}
-                  goals={goals}
+                  goals={goals.filter(
+                    (g) => g.finishType == null || g.id === todo.goalID,
+                  )}
                   onToggle={() => onToggle(todo)}
                   onEdit={(patch) => onEdit(todo, patch)}
                   onDelete={() => onDelete(todo)}
@@ -74,7 +78,7 @@ export default function TodoCard({
         )}
       </div>
 
-      <AddTodo goals={goals} onAdd={onAdd} />
+      <AddTodo goals={activeGoals} onAdd={onAdd} />
     </section>
   );
 }

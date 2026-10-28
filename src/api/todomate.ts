@@ -2,7 +2,13 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 export type Session = { token: string; expiresAt: number };
 
-export type Goal = { id: string; title: string; priority?: number };
+/** finishType: 없음/null = 진행 중, 0 달성 · 1 종료 · 2 중단 */
+export type Goal = {
+  id: string;
+  title: string;
+  priority?: number;
+  finishType?: number | null;
+};
 
 export type Todo = {
   id: string;
