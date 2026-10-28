@@ -23,9 +23,7 @@ function read(key: string): string | null {
 function initialMode(): ThemeMode {
   const saved = read(MODE_KEY);
   if (saved === "light" || saved === "dark") return saved;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  return "dark";
 }
 
 /** 밝은 포인트 색 위에는 검정, 어두운 색 위에는 흰 글씨 */
