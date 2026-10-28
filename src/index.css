@@ -107,7 +107,7 @@ select option {
 .big-date {
   display: flex;
   gap: 12px;
-  align-items: flex-start;
+  align-items: stretch;
   text-align: left;
 }
 
@@ -119,11 +119,15 @@ select option {
   color: var(--acc);
 }
 
+/* 두 줄의 윗줄 머리와 아랫줄 바닥을 숫자의 위아래에 맞춘다 */
 .big-date-text {
-  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 26px;
   font-weight: 700;
-  line-height: 1.15;
-  padding-top: 4px;
+  line-height: 0.8;
+  padding: 7.5px 0 1.5px;
 }
 
 .sidebar-footer {
@@ -386,12 +390,14 @@ select option {
   min-width: 0;
 }
 
+/* 인용문처럼 왼쪽 포인트 색 세로선 */
 .todo-memo {
-  margin: -6px 0 0;
-  padding: 0 12px 10px;
+  margin: -4px 12px 10px;
+  padding-left: 9px;
+  border-left: 2px solid var(--card-acc);
   font-size: 12px;
   line-height: 1.5;
-  color: var(--card-muted);
+  color: color-mix(in srgb, var(--card-fg) 70%, transparent);
   white-space: pre-wrap;
   word-break: break-word;
   cursor: text;

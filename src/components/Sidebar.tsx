@@ -39,9 +39,8 @@ export default function Sidebar({
       >
         <span className="big-date-num">{selected.getDate()}</span>
         <span className="big-date-text">
-          {weekday}
-          <br />
-          {month}
+          <span>{weekday}</span>
+          <span>{month}</span>
         </span>
       </button>
       <Calendar
