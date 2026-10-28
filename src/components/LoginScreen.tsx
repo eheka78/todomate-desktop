@@ -34,35 +34,51 @@ export default function LoginScreen({ onLogin, notice }: Props) {
     }
   }
 
+  const today = new Date();
+  const weekday = today
+    .toLocaleDateString("en-US", { weekday: "long" })
+    .toUpperCase();
+  const month = today
+    .toLocaleDateString("en-US", { month: "long" })
+    .toUpperCase();
+
   return (
     <main className="login">
-      <form className="card login-card" onSubmit={submit}>
-        <div className="card-title">
-          <b>Todomate</b>
+      <form className="login-col" onSubmit={submit}>
+        <div className="big-date">
+          <span className="big-date-num">{today.getDate()}</span>
+          <span className="big-date-text">
+            <span>{weekday}</span>
+            <span>{month}</span>
+          </span>
         </div>
-        <label>
-          이메일
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoFocus
-            required
-          />
-        </label>
-        <label>
-          비밀번호
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </label>
+        <p className="login-hello">투두메이트 계정으로 로그인</p>
+        <div className="login-box">
+          <label className="login-field">
+            <span>이메일</span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoFocus
+              required
+            />
+          </label>
+          <label className="login-field">
+            <span>비밀번호</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </label>
+          <button className="login-submit" disabled={busy}>
+            <span>{busy ? "로그인 중…" : "로그인"}</span>
+            <span aria-hidden>→</span>
+          </button>
+        </div>
         {error && <p className="login-error">{error}</p>}
-        <button className="primary" disabled={busy}>
-          {busy ? "로그인 중…" : "Login"}
-        </button>
         <p className="login-note">
           비밀번호는 저장하지 않아요. 로그인 토큰만 이 기기에 보관해요.
         </p>

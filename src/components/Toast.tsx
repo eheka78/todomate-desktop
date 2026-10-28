@@ -5,7 +5,16 @@ type Props = { toast: ToastState | null; onDismiss: () => void };
 export default function Toast({ toast, onDismiss }: Props) {
   if (!toast) return null;
   return (
-    <div className="toast" role="status" key={toast.id}>
+    <div
+      className={`toast${toast.error ? " error" : ""}`}
+      role={toast.error ? "alert" : "status"}
+      key={toast.id}
+    >
+      {toast.error && (
+        <span className="toast-mark" aria-hidden>
+          !
+        </span>
+      )}
       <span>{toast.message}</span>
       {toast.action && (
         <button
@@ -14,7 +23,7 @@ export default function Toast({ toast, onDismiss }: Props) {
             onDismiss();
           }}
         >
-          {toast.action.label}
+          {toast.action.label} ↺
         </button>
       )}
     </div>

@@ -20,7 +20,7 @@ type TodoScreenProps = {
 
 function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
   const [selected, setSelected] = useState(() => new Date());
-  const { toast, show, dismiss } = useToast();
+  const { toast, show, showError, dismiss } = useToast();
 
   const [range, setRange] = useState<{ from: number; to: number } | null>(
     null,
@@ -30,7 +30,7 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
   const { goals, todos, loading, add, toggle, edit, remove } = useTodos({
     token,
     date,
-    onError: show,
+    onError: showError,
     onSessionLost: onLogout,
   });
   const stats = useDayStats({ token, range, date, todos, loading });
