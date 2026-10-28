@@ -17,11 +17,12 @@ type Props = {
 };
 
 /**
- * 목표 순서대로 묶는다. 진행 중인 목표는 비어 있어도 보여서 바로 추가할 수 있고,
- * 종료된 목표는 투두가 있을 때만, 목록에 없는 목표의 투두는 맨 뒤 '기타'로
+ * 목표 순서의 역순(API는 priority 오름차순)으로 묶는다. 진행 중인 목표는 비어 있어도 보여서
+ * 바로 추가할 수 있고, 종료된 목표는 투두가 있을 때만, 목록에 없는 목표의 투두는 맨 뒤 '기타'로
  */
 function groupByGoal(goals: Goal[], todos: Todo[]) {
-  const groups = goals
+  const groups = [...goals]
+    .reverse()
     .map((g) => ({
       id: g.id,
       title: g.title,
