@@ -1,6 +1,6 @@
 # todomate-desktop
 
-데스크톱에서 쓰는 Todomate 투두 PWA. 비공식 [todomate-api](https://github.com/3x-haust/todomate-api)(`https://todomate-api.3xhaust.dev`)를 사용한다.
+데스크톱에서 쓰는 Todomate 투두 PWA. 비공식 [todomate-api](https://github.com/3x-haust/todomate-api)를 직접 띄워서 사용한다.
 
 ## 기능
 
@@ -12,6 +12,18 @@
 - 테마: 라이트 / 다크(포인트 색 선택)
 
 ## 실행
+
+먼저 API 서버를 켠다 (`../todomate-api`, `.env`는 git에 올리지 않는다).
+
+```bash
+cd ../todomate-api
+npm install && npm run build
+node --env-file=.env dist/main.js   # http://localhost:3000
+```
+
+`.env`에는 `TODOMATE_FIREBASE_API_KEY`(todomate.net 웹의 공개 Firebase 키)와 `SESSION_ENCRYPTION_KEY`(`openssl rand -hex 32`)가 필요하다. 다른 주소의 서버를 쓰려면 앱 빌드 때 `VITE_API_URL`을 지정한다.
+
+그다음 앱:
 
 ```bash
 npm install
@@ -27,5 +39,6 @@ npm run preview    # 빌드 결과 확인 (http://localhost:4173)
 ## 주의
 
 - 비공식 API라 Todomate 쪽 변경으로 깨질 수 있다.
-- 로그인 시 이메일/비밀번호가 todomate-api 서버를 거친다.
+- 로그인 시 이메일/비밀번호가 내 PC의 todomate-api 서버를 거쳐 Firebase로 간다.
+- API 서버가 꺼져 있으면 로그인과 모든 요청이 실패한다.
 - 모든 변경은 실제 Todomate 계정에 반영된다.

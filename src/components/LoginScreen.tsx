@@ -9,7 +9,7 @@ function errorMessage(e: unknown): string {
     if (e.status === 429)
       return "로그인 시도가 너무 많아요. 잠시 후 다시 해 주세요";
   }
-  return "로그인에 실패했어요. 네트워크를 확인해 주세요";
+  return "API 서버에 연결할 수 없어요. 서버가 켜져 있는지 확인해 주세요";
 }
 
 export default function LoginScreen({ onLogin }: Props) {

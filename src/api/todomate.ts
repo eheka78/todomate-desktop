@@ -1,4 +1,4 @@
-const BASE_URL = "https://todomate-api.3xhaust.dev";
+const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 export type Session = { token: string; expiresAt: number };
 
