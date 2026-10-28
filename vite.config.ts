@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.png", "apple-touch-icon.png"],
       manifest: {
-        name: "Todomate Desktop",
-        short_name: "Todomate",
-        description: "데스크톱에서 쓰는 Todomate 투두",
+        name: "todomate.web.D",
+        short_name: "todomate.web.D",
+        description: "데스크톱에서 쓰는 todomate 투두",
         lang: "ko",
         display: "standalone",
         start_url: "/",
