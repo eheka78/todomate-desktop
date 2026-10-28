@@ -620,47 +620,84 @@ select option {
   padding: 16px;
 }
 
-.login-card {
-  max-width: 360px;
-  gap: 14px;
-}
-
-.login-card label {
+.login-col {
+  width: 300px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+}
+
+.login-hello {
+  margin: 12px 0 26px;
   font-size: 12px;
+  color: var(--muted);
+}
+
+.login-box {
+  border: 1px solid var(--card-line);
+}
+
+.login-field {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--card-line);
+}
+
+.login-field:focus-within span {
+  color: var(--acc);
+}
+
+.login-field span {
+  width: 72px;
+  flex: none;
+  padding-left: 12px;
+  font-size: 11px;
   font-weight: 700;
-  color: var(--card-muted);
+  color: var(--muted);
 }
 
-.login-card input {
-  color: var(--card-fg);
+.login-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  padding: 11px 12px 11px 0;
 }
 
-.primary {
-  margin-top: 6px;
-  padding: 10px;
-  background: var(--card-acc);
-  color: var(--card-acc-ink);
+/* 크롬 자동완성의 파란 배경을 덮는다 */
+.login-field input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 100px var(--bg) inset;
+  -webkit-text-fill-color: var(--fg);
+  caret-color: var(--fg);
+}
+
+.login-submit {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 12px;
+  background: var(--acc);
+  color: var(--acc-ink);
+  font-size: 13px;
   font-weight: 800;
 }
 
-.primary:disabled {
+.login-submit:disabled {
   opacity: 0.6;
   cursor: default;
 }
 
 .login-error {
-  margin: 0;
+  margin: 12px 0 0;
   font-size: 12px;
   color: #ff6b5a;
 }
 
 .login-note {
-  margin: 0;
+  margin: 12px 0 0;
   font-size: 11px;
-  color: var(--card-muted);
+  line-height: 1.5;
+  color: var(--muted);
+  word-break: keep-all;
 }
 
 /* ---------- 토스트 ---------- */
@@ -671,21 +708,38 @@ select option {
   bottom: 28px;
   transform: translateX(-50%);
   display: flex;
-  gap: 20px;
+  gap: 14px;
   align-items: center;
-  padding: 12px 16px;
-  background: var(--fg);
-  color: var(--bg);
+  min-height: 40px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding-left: 14px;
+  border: 1px solid var(--card-line);
+  background: var(--bg);
+  color: var(--fg);
   font-size: 13px;
   z-index: 100;
   animation: toast-in 0.15s ease-out;
 }
 
-.toast button {
-  color: var(--bg);
+/* 버튼이 없는 토스트는 오른쪽 여백을 직접 둔다 */
+.toast:not(:has(button)) {
+  padding-right: 14px;
+}
+
+.toast-mark {
+  margin-right: -6px;
+  color: #ff6b5a;
   font-weight: 800;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+}
+
+.toast button {
+  align-self: stretch;
+  flex: none;
+  padding: 0 14px;
+  background: var(--acc);
+  color: var(--acc-ink);
+  font-weight: 800;
 }
 
 @keyframes toast-in {
