@@ -1,3 +1,4 @@
+import type { DayStats } from "../hooks/useDayStats";
 import type { ThemeMode } from "../hooks/useTheme";
 import Calendar from "./Calendar";
 import ThemeControls from "./ThemeControls";
@@ -5,6 +6,8 @@ import ThemeControls from "./ThemeControls";
 type Props = {
   selected: Date;
   onSelect: (d: Date) => void;
+  stats: DayStats;
+  onRangeChange: (range: { from: number; to: number }) => void;
   mode: ThemeMode;
   accent: string;
   onModeChange: (mode: ThemeMode) => void;
@@ -15,6 +18,8 @@ type Props = {
 export default function Sidebar({
   selected,
   onSelect,
+  stats,
+  onRangeChange,
   onLogout,
   ...theme
 }: Props) {
@@ -39,7 +44,12 @@ export default function Sidebar({
           {month}
         </span>
       </button>
-      <Calendar selected={selected} onSelect={onSelect} />
+      <Calendar
+        selected={selected}
+        onSelect={onSelect}
+        stats={stats}
+        onRangeChange={onRangeChange}
+      />
       <div className="sidebar-footer">
         <ThemeControls {...theme} />
         <button className="text-button" onClick={onLogout}>

@@ -59,6 +59,8 @@ export function createApi(token: string) {
   return {
     goals: () => request<Goal[]>("/goals", { token }),
     todos: (date: number) => request<Todo[]>(`/todos?date=${date}`, { token }),
+    todosInRange: (from: number, to: number) =>
+      request<Todo[]>(`/todos/range?from=${from}&to=${to}`, { token }),
     createTodo: (input: { content: string; goalId: string; date: number }) =>
       request<Todo>("/todos", {
         method: "POST",

@@ -1,7 +1,13 @@
-import { useState } from "react";
-import { isSameDay } from "../utils/date";
+import { type CSSProperties, useEffect, useState } from "react";
+import type { DayStat, DayStats } from "../hooks/useDayStats";
+import { isSameDay, toYmd } from "../utils/date";
 
-type Props = { selected: Date; onSelect: (d: Date) => void };
+type Props = {
+  selected: Date;
+  onSelect: (d: Date) => void;
+  stats: DayStats;
+  onRangeChange: (range: { from: number; to: number }) => void;
+};
 
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
 
@@ -15,7 +21,29 @@ function monthCells(year: number, month: number): Date[] {
   );
 }
 
-export default function Calendar({ selected, onSelect }: Props) {
+/** 남은 일이 있는 날은 남은 비율만큼 진한 점, 다 끝낸 날은 흐린 점 */
+function dotProps(stat: DayStat | undefined) {
+  if (!stat || stat.total === 0) return {};
+  const left = stat.total - stat.done;
+  if (left === 0) return { className: "all-done" };
+  return {
+    className: "has-left",
+    style: { "--left": left / stat.total } as CSSProperties,
+  };
+}
+
+function summary(stat: DayStat | undefined): string {
+  if (!stat || stat.total === 0) return "할 일 없음";
+  const left = stat.total - stat.done;
+  return left === 0 ? `모두 완료 / ${stat.total}개` : `${left}개 남음 / ${stat.total}개`;
+}
+
+export default function Calendar({
+  selected,
+  onSelect,
+  stats,
+  onRangeChange,
+}: Props) {
   const [view, setView] = useState(
     () => new Date(selected.getFullYear(), selected.getMonth(), 1),
   );
@@ -30,6 +58,21 @@ export default function Calendar({ selected, onSelect }: Props) {
       selected.getFullYear() !== view.getFullYear()
     ) {
       setView(new Date(selected.getFullYear(), selected.getMonth(), 1));
+    }
+  }
+
+  const cells = monthCells(view.getFullYear(), view.getMonth());
+  const from = toYmd(cells[0]);
+  const to = toYmd(cells[cells.length - 1]);
+  useEffect(() => onRangeChange({ from, to }), [from, to, onRangeChange]);
+
+  let monthDone = 0;
+  let monthTotal = 0;
+  for (const d of cells) {
+    const stat = stats.get(toYmd(d));
+    if (stat && d.getMonth() === view.getMonth()) {
+      monthDone += stat.done;
+      monthTotal += stat.total;
     }
   }
 
@@ -55,8 +98,10 @@ export default function Calendar({ selected, onSelect }: Props) {
             {w}
           </div>
         ))}
-        {monthCells(view.getFullYear(), view.getMonth()).map((d) => {
+        {cells.map((d) => {
+          const dot = dotProps(stats.get(toYmd(d)));
           const classes = ["cal-day"];
+          if (dot.className) classes.push(dot.className);
           if (d.getMonth() !== view.getMonth()) classes.push("outside");
           if (isSameDay(d, today)) classes.push("today");
           if (isSameDay(d, selected)) classes.push("selected");
@@ -64,12 +109,23 @@ export default function Calendar({ selected, onSelect }: Props) {
             <button
               key={d.toISOString()}
               className={classes.join(" ")}
+              style={dot.style}
               onClick={() => onSelect(d)}
             >
               {d.getDate()}
             </button>
           );
         })}
+      </div>
+      <div className="cal-summary">
+        <span>
+          {selected.getDate()}일 · <b>{summary(stats.get(toYmd(selected)))}</b>
+        </span>
+        {monthTotal > 0 && (
+          <span>
+            이번 달 {monthDone}/{monthTotal}
+          </span>
+        )}
       </div>
     </div>
   );

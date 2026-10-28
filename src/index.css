@@ -165,8 +165,36 @@ select option {
 }
 
 .cal-day {
+  position: relative;
   font-size: 13px;
-  padding: 7px 0;
+  padding: 7px 0 9px;
+}
+
+/* 남은 일이 있는 날: 남은 비율만큼 진한 점 · 다 끝낸 날: 흐린 점 */
+.cal-day.has-left::after,
+.cal-day.all-done::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+}
+
+.cal-day.has-left::after {
+  background: var(--acc);
+  opacity: calc(0.35 + var(--left) * 0.65);
+}
+
+.cal-day.all-done::after {
+  background: var(--muted);
+  opacity: 0.5;
+}
+
+.cal-day.selected::after {
+  background: var(--acc-ink);
 }
 
 .cal-day:hover {
@@ -187,6 +215,19 @@ select option {
   background: var(--acc);
   color: var(--acc-ink);
   font-weight: 800;
+}
+
+.cal-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cal-summary b {
+  color: var(--fg);
+  font-weight: 700;
 }
 
 /* ---------- 테마 설정 ---------- */
@@ -331,6 +372,8 @@ select option {
 
 .todo.done .todo-text {
   text-decoration: line-through;
+  text-decoration-color: var(--card-acc);
+  text-decoration-thickness: 1px;
   color: var(--card-muted);
 }
 

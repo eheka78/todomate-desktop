@@ -4,6 +4,7 @@ import LoginScreen from "./components/LoginScreen";
 import Sidebar from "./components/Sidebar";
 import Toast from "./components/Toast";
 import TodoCard from "./components/TodoCard";
+import { useDayStats } from "./hooks/useDayStats";
 import { useSession } from "./hooks/useSession";
 import { useTheme } from "./hooks/useTheme";
 import { useToast } from "./hooks/useToast";
@@ -20,12 +21,18 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
   const [selected, setSelected] = useState(() => new Date());
   const { toast, show, dismiss } = useToast();
 
+  const [range, setRange] = useState<{ from: number; to: number } | null>(
+    null,
+  );
+  const date = toYmd(selected);
+
   const { goals, todos, loading, add, toggle, edit, remove } = useTodos({
     token,
-    date: toYmd(selected),
+    date,
     onError: show,
     onSessionLost: onLogout,
   });
+  const stats = useDayStats({ token, range, date, todos, loading });
 
   const handleDelete = (todo: Todo) => {
     const undo = remove(todo);
@@ -37,6 +44,8 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
       <Sidebar
         selected={selected}
         onSelect={setSelected}
+        stats={stats}
+        onRangeChange={setRange}
         mode={theme.mode}
         accent={theme.accent}
         onModeChange={theme.setMode}
