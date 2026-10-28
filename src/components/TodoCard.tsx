@@ -11,7 +11,12 @@ type Props = {
   onToggle: (todo: Todo) => void;
   onEdit: (
     todo: Todo,
-    patch: { content?: string; goalId?: string; date?: number },
+    patch: {
+      content?: string;
+      goalId?: string;
+      date?: number;
+      memo?: string | null;
+    },
   ) => void;
   onDelete: (todo: Todo) => void;
 };
@@ -27,14 +32,40 @@ function groupByGoal(goals: Goal[], todos: Todo[]) {
       id: g.id,
       title: g.title,
       active: g.finishType == null,
+      private: g.isPublic === false && g.isViewerIDsFollowers === false,
       todos: todos.filter((t) => t.goalID === g.id),
     }))
     .filter((g) => g.active || g.todos.length > 0);
   const known = new Set(goals.map((g) => g.id));
   const rest = todos.filter((t) => !known.has(t.goalID));
   if (rest.length > 0)
-    groups.push({ id: "__etc", title: "기타", active: false, todos: rest });
+    groups.push({
+      id: "__etc",
+      title: "기타",
+      active: false,
+      private: false,
+      todos: rest,
+    });
   return groups;
+}
+
+function LockIcon() {
+  return (
+    <svg
+      className="goal-lock"
+      viewBox="0 0 12 12"
+      aria-label="나만 보기"
+      role="img"
+    >
+      <rect x="2" y="5.5" width="8" height="5.5" fill="currentColor" />
+      <path
+        d="M4 5.5V4a2 2 0 0 1 4 0v1.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+      />
+    </svg>
+  );
 }
 
 export default function TodoCard({
@@ -67,6 +98,7 @@ export default function TodoCard({
             <div key={group.id} className="goal-group">
               <div className="goal-title">
                 {group.title}
+                {group.private && <LockIcon />}
                 {group.active && (
                   <button
                     className="goal-add"

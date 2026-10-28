@@ -8,6 +8,9 @@ export type Goal = {
   title: string;
   priority?: number;
   finishType?: number | null;
+  /** 둘 다 false면 나만 보기 */
+  isPublic?: boolean;
+  isViewerIDsFollowers?: boolean;
 };
 
 export type Todo = {
@@ -18,6 +21,7 @@ export type Todo = {
   goalID: string;
   isDone: boolean;
   createTime: number;
+  memo?: string | null;
 };
 
 export class ApiError extends Error {
@@ -69,7 +73,12 @@ export function createApi(token: string) {
       }),
     updateTodo: (
       id: string,
-      input: { content?: string; goalId?: string; date?: number },
+      input: {
+        content?: string;
+        goalId?: string;
+        date?: number;
+        memo?: string | null;
+      },
     ) =>
       request<Todo>(`/todos/${id}`, {
         method: "PATCH",

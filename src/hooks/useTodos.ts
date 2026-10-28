@@ -118,7 +118,12 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
   const edit = useCallback(
     async (
       todo: Todo,
-      patch: { content?: string; goalId?: string; date?: number },
+      patch: {
+        content?: string;
+        goalId?: string;
+        date?: number;
+        memo?: string | null;
+      },
     ) => {
       try {
         const updated = await api.updateTodo(todo.id, patch);

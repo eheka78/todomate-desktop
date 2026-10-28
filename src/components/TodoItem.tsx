@@ -6,7 +6,12 @@ type Props = {
   todo: Todo;
   goals: Goal[];
   onToggle: () => void;
-  onEdit: (patch: { content?: string; goalId?: string; date?: number }) => void;
+  onEdit: (patch: {
+    content?: string;
+    goalId?: string;
+    date?: number;
+    memo?: string | null;
+  }) => void;
   onDelete: () => void;
 };
 
@@ -20,6 +25,7 @@ export default function TodoItem({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(todo.content);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [memoDraft, setMemoDraft] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,37 +58,77 @@ export default function TodoItem({
     if (content && content !== todo.content) onEdit({ content });
   }
 
+  function startMemo() {
+    setMenuOpen(false);
+    setMemoDraft(todo.memo ?? "");
+  }
+
+  function commitMemo() {
+    if (memoDraft === null) return;
+    setMemoDraft(null);
+    const memo = memoDraft.trim();
+    if (memo !== (todo.memo ?? "")) onEdit({ memo: memo || null });
+  }
+
   return (
     <div
       ref={ref}
       className={`todo${todo.isDone ? " done" : ""}${menuOpen ? " menu-open" : ""}`}
     >
-      {editing ? (
-        <input
-          className="todo-edit"
-          value={draft}
-          autoFocus
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={(e) => {
-            if (e.nativeEvent.isComposing) return;
-            if (e.key === "Enter") commit();
-            if (e.key === "Escape") setEditing(false);
-          }}
-        />
-      ) : (
-        <span
-          className="todo-text"
-          onDoubleClick={startEdit}
-          title="더블클릭해서 수정"
-        >
-          {todo.content}
-        </span>
-      )}
+      <div className="todo-body">
+        {editing ? (
+          <input
+            className="todo-edit"
+            value={draft}
+            autoFocus
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+              if (e.nativeEvent.isComposing) return;
+              if (e.key === "Enter") commit();
+              if (e.key === "Escape") setEditing(false);
+            }}
+          />
+        ) : (
+          <span
+            className="todo-text"
+            onDoubleClick={startEdit}
+            title="더블클릭해서 수정"
+          >
+            {todo.content}
+          </span>
+        )}
+        {memoDraft !== null ? (
+          <textarea
+            className="todo-memo-edit"
+            value={memoDraft}
+            autoFocus
+            rows={2}
+            placeholder="메모 (Ctrl+Enter로 저장)"
+            onChange={(e) => setMemoDraft(e.target.value)}
+            onBlur={commitMemo}
+            onKeyDown={(e) => {
+              if (e.nativeEvent.isComposing) return;
+              if (e.key === "Enter" && e.ctrlKey) commitMemo();
+              if (e.key === "Escape") setMemoDraft(null);
+            }}
+          />
+        ) : (
+          todo.memo && (
+            <p
+              className="todo-memo"
+              onDoubleClick={startMemo}
+              title="더블클릭해서 수정"
+            >
+              {todo.memo}
+            </p>
+          )
+        )}
+      </div>
       <div className="todo-actions">
         <button
           onClick={() => setMenuOpen((v) => !v)}
-          aria-label="목표·날짜 변경"
+          aria-label="목표·날짜·메모"
         >
           ⋯
         </button>
@@ -116,6 +162,9 @@ export default function TodoItem({
               ))}
             </select>
           </label>
+          <button className="todo-menu-memo" onClick={startMemo}>
+            {todo.memo ? "메모 고치기" : "메모 쓰기"}
+          </button>
           <label>
             날짜
             <input

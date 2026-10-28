@@ -35,7 +35,9 @@ function dotProps(stat: DayStat | undefined) {
 function summary(stat: DayStat | undefined): string {
   if (!stat || stat.total === 0) return "할 일 없음";
   const left = stat.total - stat.done;
-  return left === 0 ? `모두 완료 / ${stat.total}개` : `${left}개 남음 / ${stat.total}개`;
+  return left === 0
+    ? `모두 완료 / ${stat.total}개`
+    : `${left}개 남음 / ${stat.total}개`;
 }
 
 export default function Calendar({
@@ -87,6 +89,15 @@ export default function Calendar({
         </button>
         <span>
           {view.getFullYear()}.{String(view.getMonth() + 1).padStart(2, "0")}
+          {!(
+            isSameDay(selected, today) &&
+            view.getMonth() === today.getMonth() &&
+            view.getFullYear() === today.getFullYear()
+          ) && (
+            <button className="cal-today" onClick={() => onSelect(new Date())}>
+              오늘
+            </button>
+          )}
         </span>
         <button onClick={() => move(1)} aria-label="다음 달">
           ›

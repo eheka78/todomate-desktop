@@ -150,6 +150,17 @@ select option {
   padding: 0 8px;
 }
 
+.cal-head .cal-today {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 0 0 8px;
+  color: var(--muted);
+}
+
+.cal-head .cal-today:hover {
+  color: var(--fg);
+}
+
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -336,8 +347,13 @@ select option {
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.5px;
-  color: var(--card-muted);
+  color: var(--card-fg);
   margin: 16px 0 6px;
+}
+
+.goal-lock {
+  width: 10px;
+  height: 10px;
 }
 
 /* ---------- 투두 ---------- */
@@ -361,6 +377,36 @@ select option {
   padding: 10px 12px;
   word-break: break-word;
   cursor: text;
+}
+
+.todo-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.todo-memo {
+  margin: -6px 0 0;
+  padding: 0 12px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--card-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+  cursor: text;
+}
+
+.todo-memo-edit {
+  margin: 0 8px 8px;
+  padding: 6px 8px;
+  border: 1px dashed var(--card-muted);
+  background: transparent;
+  color: var(--card-fg);
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
 }
 
 .todo-edit {
@@ -440,6 +486,17 @@ select option {
   font-size: 11px;
   font-weight: 700;
   color: var(--card-muted);
+}
+
+.todo-menu-memo {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--card-muted);
+}
+
+.todo-menu-memo:hover {
+  color: var(--card-fg);
 }
 
 .todo-menu select,
