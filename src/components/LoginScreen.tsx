@@ -1,7 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { ApiError } from "../api/todomate";
 
-type Props = { onLogin: (email: string, password: string) => Promise<void> };
+type Props = {
+  onLogin: (email: string, password: string) => Promise<void>;
+  /** 투두 화면에서 튕겨 나온 이유 */
+  notice?: string | null;
+};
 
 function errorMessage(e: unknown): string {
   if (e instanceof ApiError) {
@@ -12,10 +16,10 @@ function errorMessage(e: unknown): string {
   return "API 서버에 연결할 수 없어요. 서버가 켜져 있는지 확인해 주세요";
 }
 
-export default function LoginScreen({ onLogin }: Props) {
+export default function LoginScreen({ onLogin, notice }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(notice ?? null);
   const [busy, setBusy] = useState(false);
 
   async function submit(e: FormEvent) {

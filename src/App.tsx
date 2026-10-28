@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { Todo } from "./api/todomate";
 import LoginScreen from "./components/LoginScreen";
 import Sidebar from "./components/Sidebar";
@@ -12,7 +12,7 @@ import { toYmd } from "./utils/date";
 
 type TodoScreenProps = {
   token: string;
-  onLogout: () => void;
+  onLogout: (reason?: string) => void;
   theme: ReturnType<typeof useTheme>;
 };
 
@@ -24,7 +24,7 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
     token,
     date: toYmd(selected),
     onError: show,
-    onUnauthorized: onLogout,
+    onSessionLost: onLogout,
   });
 
   const handleDelete = (todo: Todo) => {
@@ -41,7 +41,7 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
         accent={theme.accent}
         onModeChange={theme.setMode}
         onAccentChange={theme.setAccent}
-        onLogout={onLogout}
+        onLogout={() => onLogout()}
       />
       <TodoCard
         goals={goals}
@@ -60,9 +60,19 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
 export default function App() {
   const { session, login, logout } = useSession();
   const theme = useTheme();
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const handleLogout = useCallback(
+    (reason?: string) => {
+      setNotice(reason ?? null);
+      logout();
+    },
+    [logout],
+  );
+
   return session ? (
-    <TodoScreen token={session.token} onLogout={logout} theme={theme} />
+    <TodoScreen token={session.token} onLogout={handleLogout} theme={theme} />
   ) : (
-    <LoginScreen onLogin={login} />
+    <LoginScreen onLogin={login} notice={notice} />
   );
 }

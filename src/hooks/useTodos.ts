@@ -7,12 +7,24 @@ type Options = {
   token: string;
   date: number;
   onError: (message: string) => void;
-  onUnauthorized: () => void;
+  /** 세션을 쓸 수 없을 때. reason은 로그인 화면에 보여 줄 문구 */
+  onSessionLost: (reason: string) => void;
 };
+
+const EXPIRED = "로그인이 만료됐어요. 다시 로그인해 주세요";
+
+function loadFailReason(error: unknown): string {
+  if (error instanceof ApiError) {
+    return error.status === 401
+      ? EXPIRED
+      : `투두를 불러오지 못했어요 (${error.message})`;
+  }
+  return "API 서버에 연결할 수 없어요. 서버가 켜져 있는지 확인해 주세요";
+}
 
 type PendingDelete = { todo: Todo; timer: number };
 
-export function useTodos({ token, date, onError, onUnauthorized }: Options) {
+export function useTodos({ token, date, onError, onSessionLost }: Options) {
   const api = useMemo(() => createApi(token), [token]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -23,16 +35,21 @@ export function useTodos({ token, date, onError, onUnauthorized }: Options) {
 
   const fail = useCallback(
     (error: unknown) => {
-      if (error instanceof ApiError && error.status === 401) onUnauthorized();
+      if (error instanceof ApiError && error.status === 401)
+        onSessionLost(EXPIRED);
       else
         onError(error instanceof Error ? error.message : "요청에 실패했어요");
     },
-    [onError, onUnauthorized],
+    [onError, onSessionLost],
   );
 
+  // 첫 요청이 실패하면 어떤 이유든 로그인 화면으로 돌아간다.
   useEffect(() => {
-    api.goals().then(setGoals).catch(fail);
-  }, [api, fail]);
+    api
+      .goals()
+      .then(setGoals)
+      .catch((e) => onSessionLost(loadFailReason(e)));
+  }, [api, onSessionLost]);
 
   useEffect(() => {
     let stale = false;
