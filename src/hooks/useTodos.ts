@@ -103,6 +103,7 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
       );
       try {
         await api.setDone(todo.id, done);
+        return true;
       } catch (e) {
         setTodos((list) =>
           list.map((t) =>
@@ -110,6 +111,7 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
           ),
         );
         fail(e);
+        return false;
       }
     },
     [api, fail],
@@ -127,13 +129,20 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
     ) => {
       try {
         const updated = await api.updateTodo(todo.id, patch);
-        setTodos((list) =>
-          todoDateToYmd(updated.date) === date
-            ? list.map((t) => (t.id === todo.id ? updated : t))
-            : list.filter((t) => t.id !== todo.id),
-        );
+        setTodos((list) => {
+          if (todoDateToYmd(updated.date) !== date)
+            return list.filter((t) => t.id !== todo.id);
+          // 다른 날에서 이 날로 옮겨 온 투두는 새로 끼워 넣는다
+          if (!list.some((t) => t.id === todo.id))
+            return [...list, updated].sort(
+              (a, b) => a.createTime - b.createTime,
+            );
+          return list.map((t) => (t.id === todo.id ? updated : t));
+        });
+        return true;
       } catch (e) {
         fail(e);
+        return false;
       }
     },
     [api, date, fail],

@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import Toast from "./components/Toast";
 import TodoCard from "./components/TodoCard";
 import { useDayStats } from "./hooks/useDayStats";
+import { useOverdue } from "./hooks/useOverdue";
 import { useSession } from "./hooks/useSession";
 import { useTheme } from "./hooks/useTheme";
 import { useToast } from "./hooks/useToast";
@@ -33,6 +34,15 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
     onSessionLost: onLogout,
   });
   const stats = useDayStats({ token, range, date, todos, loading });
+  const { overdue, done, moveToToday } = useOverdue({
+    token,
+    goals,
+    date,
+    todos,
+    loading,
+    toggle,
+    edit,
+  });
 
   const handleDelete = (todo: Todo) => {
     const undo = remove(todo);
@@ -46,6 +56,9 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
         onSelect={setSelected}
         stats={stats}
         onRangeChange={setRange}
+        overdue={overdue}
+        onOverdueDone={done}
+        onMoveToToday={moveToToday}
         mode={theme.mode}
         accent={theme.accent}
         onModeChange={theme.setMode}

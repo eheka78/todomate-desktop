@@ -98,6 +98,7 @@ select option {
 
 .sidebar {
   width: 280px;
+  min-height: 0;
   flex: none;
   display: flex;
   flex-direction: column;
@@ -243,6 +244,86 @@ select option {
 .cal-summary b {
   color: var(--fg);
   font-weight: 700;
+}
+
+/* ---------- 밀린 할 일 ---------- */
+
+.overdue {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.overdue-title {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.overdue-title span {
+  color: var(--acc);
+}
+
+.overdue-list {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.overdue-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  /* 카드 밖이라 라이트·다크 모두 바탕색 기준으로 옅게 */
+  border-bottom: 1px solid color-mix(in srgb, var(--fg) 14%, transparent);
+  font-size: 13px;
+}
+
+.overdue-date {
+  flex: none;
+  width: 34px;
+  text-align: left;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.overdue-date:hover {
+  color: var(--fg);
+}
+
+.overdue-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--fg) 80%, transparent);
+}
+
+.overdue-move {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--acc);
+  visibility: hidden;
+}
+
+.overdue-row:hover .overdue-move,
+.overdue-move:focus-visible {
+  visibility: visible;
+}
+
+.overdue-check {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid color-mix(in srgb, var(--fg) 35%, transparent);
+}
+
+.overdue-check:hover {
+  border-color: var(--acc);
 }
 
 /* ---------- 테마 설정 ---------- */
@@ -625,6 +706,10 @@ select option {
 
   .sidebar {
     width: 100%;
+  }
+
+  .overdue {
+    display: none;
   }
 
   .card {

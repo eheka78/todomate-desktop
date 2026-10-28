@@ -1,6 +1,8 @@
+import type { Todo } from "../api/todomate";
 import type { DayStats } from "../hooks/useDayStats";
 import type { ThemeMode } from "../hooks/useTheme";
 import Calendar from "./Calendar";
+import Overdue from "./Overdue";
 import ThemeControls from "./ThemeControls";
 
 type Props = {
@@ -8,6 +10,9 @@ type Props = {
   onSelect: (d: Date) => void;
   stats: DayStats;
   onRangeChange: (range: { from: number; to: number }) => void;
+  overdue: Todo[];
+  onOverdueDone: (todo: Todo) => void;
+  onMoveToToday: (todo: Todo) => void;
   mode: ThemeMode;
   accent: string;
   onModeChange: (mode: ThemeMode) => void;
@@ -20,6 +25,9 @@ export default function Sidebar({
   onSelect,
   stats,
   onRangeChange,
+  overdue,
+  onOverdueDone,
+  onMoveToToday,
   onLogout,
   ...theme
 }: Props) {
@@ -48,6 +56,12 @@ export default function Sidebar({
         onSelect={onSelect}
         stats={stats}
         onRangeChange={onRangeChange}
+      />
+      <Overdue
+        todos={overdue}
+        onSelectDate={onSelect}
+        onDone={onOverdueDone}
+        onMoveToToday={onMoveToToday}
       />
       <div className="sidebar-footer">
         <ThemeControls {...theme} />
