@@ -289,6 +289,9 @@ select option {
 }
 
 .goal-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.5px;
@@ -403,44 +406,21 @@ select option {
 
 /* ---------- 추가 ---------- */
 
-.add {
-  padding-top: 24px;
-  position: relative;
-  background: var(--card-bg);
-}
-
-.add-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.add-head b {
-  font-size: 22px;
-  font-weight: 800;
-}
-
-.add-plus {
-  font-size: 30px;
-  font-weight: 300;
+.goal-add {
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1;
+  padding: 0 4px;
+  color: var(--card-muted);
+}
+
+.goal-add:hover {
   color: var(--card-acc);
 }
 
-.add-row {
-  display: flex;
-  gap: 6px;
-}
-
-.add-row select {
-  max-width: 120px;
-  font-weight: 700;
-}
-
-.add-row input {
-  flex: 1;
-  min-width: 0;
+.todo.adding {
+  border-style: dashed;
+  border-color: var(--card-muted);
 }
 
 /* ---------- 로그인 ---------- */
