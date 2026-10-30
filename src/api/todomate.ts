@@ -1,4 +1,5 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+const REQUEST_TIMEOUT_MS = 10_000;
 
 export type Session = { token: string; expiresAt: number };
 
@@ -41,7 +42,12 @@ async function request<T>(
   if (rest.body !== undefined) headers["content-type"] = "application/json";
   if (token) headers.authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${BASE_URL}${path}`, { ...rest, headers });
+  // 오래 쉬었다 돌아오면 끊긴 연결에 걸려 응답 없이 멈출 수 있어 시간 제한을 둔다.
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...rest,
+    headers,
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
   if (!res.ok) {
     const body = await res.json().catch(() => null);
     throw new ApiError(
