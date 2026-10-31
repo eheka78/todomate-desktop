@@ -414,9 +414,14 @@ select option {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  /* 메뉴가 잘리지 않도록 여유 */
+  /* 마지막 투두의 메뉴도 스크롤해서 볼 수 있도록 여유 */
   padding-bottom: 80px;
-  margin-bottom: -80px;
+  transition: opacity 0.15s;
+}
+
+/* 받아 둔 투두 없이 이 날의 응답을 기다리는 중 */
+.todo-list.loading {
+  opacity: 0.4;
 }
 
 .empty {

@@ -30,6 +30,10 @@ export default function TodoItem({
 
   useEffect(() => {
     if (!menuOpen) return;
+    // 목록 아래쪽에서 열면 메뉴가 잘리지 않게 보이는 위치로 스크롤한다
+    ref.current
+      ?.querySelector(".todo-menu")
+      ?.scrollIntoView({ block: "nearest" });
     const close = (e: MouseEvent | KeyboardEvent) => {
       if (
         e instanceof KeyboardEvent
