@@ -9,6 +9,8 @@ type Options = {
   onError: (message: string) => void;
   /** 세션을 쓸 수 없을 때. reason은 로그인 화면에 보여 줄 문구 */
   onSessionLost: (reason: string) => void;
+  /** 서버의 투두가 바뀐 뒤. 기간 데이터를 다시 받는 데 쓴다 */
+  onChanged: () => void;
 };
 
 const EXPIRED = "로그인이 만료됐어요. 다시 로그인해 주세요";
@@ -24,7 +26,13 @@ function loadFailReason(error: unknown): string {
 
 type PendingDelete = { todo: Todo; timer: number };
 
-export function useTodos({ token, date, onError, onSessionLost }: Options) {
+export function useTodos({
+  token,
+  date,
+  onError,
+  onSessionLost,
+  onChanged,
+}: Options) {
   const api = useMemo(() => createApi(token), [token]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -53,6 +61,8 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
 
   useEffect(() => {
     let stale = false;
+    // 이전 날의 투두가 남아 보이지 않도록 비우고 응답을 기다린다
+    setTodos([]);
     setLoading(true);
     api
       .todos(date)
@@ -88,11 +98,12 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
       try {
         const created = await api.createTodo({ content, goalId, date });
         setTodos((list) => [...list, created]);
+        onChanged();
       } catch (e) {
         fail(e);
       }
     },
-    [api, date, fail],
+    [api, date, fail, onChanged],
   );
 
   const toggle = useCallback(
@@ -103,6 +114,7 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
       );
       try {
         await api.setDone(todo.id, done);
+        onChanged();
         return true;
       } catch (e) {
         setTodos((list) =>
@@ -114,7 +126,7 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
         return false;
       }
     },
-    [api, fail],
+    [api, fail, onChanged],
   );
 
   const edit = useCallback(
@@ -139,13 +151,14 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
             );
           return list.map((t) => (t.id === todo.id ? updated : t));
         });
+        onChanged();
         return true;
       } catch (e) {
         fail(e);
         return false;
       }
     },
-    [api, date, fail],
+    [api, date, fail, onChanged],
   );
 
   /** 화면에서 바로 지우고 TOAST_MS 뒤에 실제 삭제. 반환된 함수로 되돌린다. */
@@ -154,7 +167,7 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
       setTodos((list) => list.filter((t) => t.id !== todo.id));
       const timer = window.setTimeout(() => {
         pending.current.delete(todo.id);
-        api.deleteTodo(todo.id).catch(fail);
+        api.deleteTodo(todo.id).then(onChanged, fail);
       }, TOAST_MS);
       pending.current.set(todo.id, { todo, timer });
 
@@ -170,7 +183,7 @@ export function useTodos({ token, date, onError, onSessionLost }: Options) {
         }
       };
     },
-    [api, fail],
+    [api, fail, onChanged],
   );
 
   return { goals, todos, loading, add, toggle, edit, remove };

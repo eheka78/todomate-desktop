@@ -11,6 +11,8 @@ type Options = {
   date: number;
   todos: Todo[];
   loading: boolean;
+  /** 바뀌면 목록을 다시 받는다 */
+  revision: number;
   toggle: (todo: Todo) => Promise<boolean>;
   edit: (todo: Todo, patch: { date: number }) => Promise<boolean>;
 };
@@ -27,6 +29,7 @@ export function useOverdue({
   date,
   todos,
   loading,
+  revision,
   toggle,
   edit,
 }: Options) {
@@ -45,7 +48,7 @@ export function useOverdue({
     return () => {
       stale = true;
     };
-  }, [api, from, to, date]);
+  }, [api, from, to, revision]);
 
   const overdue = useMemo(() => {
     const live = !loading && date >= from && date <= to;

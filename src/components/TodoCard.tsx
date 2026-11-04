@@ -90,7 +90,7 @@ export default function TodoCard({
         </span>
       </header>
 
-      <div className="todo-list">
+      <div className={loading ? "todo-list loading" : "todo-list"}>
         {groups.length === 0 ? (
           <p className="empty">{loading ? "불러오는 중…" : "할 일이 없어요"}</p>
         ) : (

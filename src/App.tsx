@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useReducer, useState } from "react";
 import type { Todo } from "./api/todomate";
 import LoginScreen from "./components/LoginScreen";
 import Sidebar from "./components/Sidebar";
@@ -6,6 +6,7 @@ import Toast from "./components/Toast";
 import TodoCard from "./components/TodoCard";
 import { useDayStats } from "./hooks/useDayStats";
 import { useOverdue } from "./hooks/useOverdue";
+import { useRangeTodos } from "./hooks/useRangeTodos";
 import { useSession } from "./hooks/useSession";
 import { useTheme } from "./hooks/useTheme";
 import { useToast } from "./hooks/useToast";
@@ -22,24 +23,27 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
   const [selected, setSelected] = useState(() => new Date());
   const { toast, show, showError, dismiss } = useToast();
 
-  const [range, setRange] = useState<{ from: number; to: number } | null>(
-    null,
-  );
+  const [range, setRange] = useState<{ from: number; to: number } | null>(null);
   const date = toYmd(selected);
+  // 투두를 바꿀 때마다 올려 기간 데이터를 다시 받게 한다
+  const [revision, bumpRevision] = useReducer((n: number) => n + 1, 0);
 
+  const rangeTodos = useRangeTodos({ token, range, revision });
   const { goals, todos, loading, add, toggle, edit, remove } = useTodos({
     token,
     date,
     onError: showError,
     onSessionLost: onLogout,
+    onChanged: bumpRevision,
   });
-  const stats = useDayStats({ token, range, date, todos, loading });
+  const stats = useDayStats({ range: rangeTodos, date, todos, loading });
   const { overdue, done, moveToToday } = useOverdue({
     token,
     goals,
     date,
     todos,
     loading,
+    revision,
     toggle,
     edit,
   });
