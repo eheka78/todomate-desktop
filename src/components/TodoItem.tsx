@@ -166,9 +166,6 @@ export default function TodoItem({
               ))}
             </select>
           </label>
-          <button className="todo-menu-memo" onClick={startMemo}>
-            {todo.memo ? "메모 고치기" : "메모 쓰기"}
-          </button>
           <label>
             날짜
             <input
@@ -181,6 +178,9 @@ export default function TodoItem({
               }}
             />
           </label>
+          <button className="todo-menu-memo" onClick={startMemo}>
+            {todo.memo ? "메모 고치기" : "메모 쓰기"}
+          </button>
         </div>
       )}
     </div>
