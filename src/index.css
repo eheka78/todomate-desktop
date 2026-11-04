@@ -512,7 +512,8 @@ select option {
   text-decoration: line-through;
   text-decoration-color: var(--card-acc);
   text-decoration-thickness: 1px;
-  color: var(--card-muted);
+  /* 취소선이 겹쳐도 읽히도록 --card-muted(45%)보다 진하게 */
+  color: color-mix(in srgb, var(--card-fg) 70%, transparent);
 }
 
 .todo-actions {
