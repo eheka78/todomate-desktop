@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Goal, Todo } from "../api/todomate";
 import AddTodo from "./AddTodo";
+import PostponeMenu from "./PostponeMenu";
 import TodoItem from "./TodoItem";
 
 type Props = {
@@ -19,6 +20,8 @@ type Props = {
     },
   ) => void;
   onDelete: (todo: Todo) => void;
+  /** 이 날의 미완료 할 일을 모두 옮긴다 */
+  onPostpone: (date: number) => void;
 };
 
 /**
@@ -76,6 +79,7 @@ export default function TodoCard({
   onToggle,
   onEdit,
   onDelete,
+  onPostpone,
 }: Props) {
   const [addingTo, setAddingTo] = useState<string | null>(null);
   const doneCount = todos.filter((t) => t.isDone).length;
@@ -85,8 +89,14 @@ export default function TodoCard({
     <section className="card">
       <header className="card-title">
         <b>TodoList</b>
-        <span className="count">
-          {doneCount} / {todos.length}
+        <span className="card-title-side">
+          <PostponeMenu
+            count={loading ? 0 : todos.length - doneCount}
+            onPostpone={onPostpone}
+          />
+          <span className="count">
+            {doneCount} / {todos.length}
+          </span>
         </span>
       </header>
 

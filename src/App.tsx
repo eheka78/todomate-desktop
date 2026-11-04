@@ -11,7 +11,7 @@ import { useSession } from "./hooks/useSession";
 import { useTheme } from "./hooks/useTheme";
 import { useToast } from "./hooks/useToast";
 import { useTodos } from "./hooks/useTodos";
-import { toYmd } from "./utils/date";
+import { toYmd, ymdToInput } from "./utils/date";
 
 type TodoScreenProps = {
   token: string;
@@ -29,7 +29,8 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
   const [revision, bumpRevision] = useReducer((n: number) => n + 1, 0);
 
   const rangeTodos = useRangeTodos({ token, range, revision });
-  const { goals, todos, loading, add, toggle, edit, remove } = useTodos({
+  const { goals, todos, loading, add, toggle, edit, remove, moveMany } =
+    useTodos({
     token,
     date,
     onError: showError,
@@ -37,7 +38,7 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
     onChanged: bumpRevision,
   });
   const stats = useDayStats({ range: rangeTodos, date, todos, loading });
-  const { overdue, done, moveToToday } = useOverdue({
+  const { overdue, done, moveToToday, postponeAll } = useOverdue({
     token,
     goals,
     date,
@@ -46,7 +47,26 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
     revision,
     toggle,
     edit,
+    moveMany,
   });
+
+  const notifyMoved = (moved: number, target: number) => {
+    if (moved > 0)
+      show(`${moved}개를 ${ymdToInput(target).slice(5).replace("-", ".")}로 옮겼어요`);
+  };
+
+  const postponeDay = async (target: number) => {
+    const { moved } = await moveMany(
+      todos.filter((t) => !t.isDone),
+      target,
+    );
+    notifyMoved(moved, target);
+  };
+
+  const postponeOverdue = async (target: number) => {
+    const { moved } = await postponeAll(target);
+    notifyMoved(moved, target);
+  };
 
   const handleDelete = (todo: Todo) => {
     const undo = remove(todo);
@@ -63,6 +83,7 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
         overdue={overdue}
         onOverdueDone={done}
         onMoveToToday={moveToToday}
+        onPostponeOverdue={postponeOverdue}
         mode={theme.mode}
         accent={theme.accent}
         onModeChange={theme.setMode}
@@ -77,6 +98,7 @@ function TodoScreen({ token, onLogout, theme }: TodoScreenProps) {
         onToggle={toggle}
         onEdit={edit}
         onDelete={handleDelete}
+        onPostpone={postponeDay}
       />
       <Toast toast={toast} onDismiss={dismiss} />
     </div>

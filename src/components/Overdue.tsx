@@ -1,11 +1,13 @@
 import type { Todo } from "../api/todomate";
 import { todoDateToYmd, ymdToDate } from "../utils/date";
+import PostponeMenu from "./PostponeMenu";
 
 type Props = {
   todos: Todo[];
   onSelectDate: (d: Date) => void;
   onDone: (todo: Todo) => void;
   onMoveToToday: (todo: Todo) => void;
+  onPostponeAll: (date: number) => void;
 };
 
 function shortDate(todo: Todo): string {
@@ -18,6 +20,7 @@ export default function Overdue({
   onSelectDate,
   onDone,
   onMoveToToday,
+  onPostponeAll,
 }: Props) {
   if (todos.length === 0) return null;
 
@@ -25,6 +28,7 @@ export default function Overdue({
     <section className="overdue">
       <div className="overdue-title">
         밀린 할 일 <span>{todos.length}</span>
+        <PostponeMenu count={todos.length} onPostpone={onPostponeAll} />
       </div>
       <div className="overdue-list">
         {todos.map((todo) => (

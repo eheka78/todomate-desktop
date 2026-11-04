@@ -186,5 +186,35 @@ export function useTodos({
     [api, fail, onChanged],
   );
 
-  return { goals, todos, loading, add, toggle, edit, remove };
+  /** 여러 투두를 target 날로 한 번에 옮긴다. 옮기지 못한 투두를 돌려준다 */
+  const moveMany = useCallback(
+    async (list: Todo[], target: number) => {
+      const targets = list.filter((t) => todoDateToYmd(t.date) !== target);
+      const results = await Promise.allSettled(
+        targets.map((t) => api.updateTodo(t.id, { date: target })),
+      );
+      const moved = results.flatMap((r) =>
+        r.status === "fulfilled" ? [r.value] : [],
+      );
+      const failed = targets.filter((_, i) => results[i].status === "rejected");
+      const movedIds = new Set(moved.map((t) => t.id));
+      setTodos((cur) => {
+        const rest = cur.filter((t) => !movedIds.has(t.id));
+        // 화면에 보이는 날로 옮겨 온 투두는 끼워 넣는다
+        const incoming = moved.filter(
+          (t) => todoDateToYmd(t.date) === currentDate.current,
+        );
+        return incoming.length === 0
+          ? rest
+          : [...rest, ...incoming].sort((a, b) => a.createTime - b.createTime);
+      });
+      if (moved.length > 0) onChanged();
+      const error = results.find((r) => r.status === "rejected");
+      if (error) fail(error.reason);
+      return { moved: moved.length, failed };
+    },
+    [api, fail, onChanged],
+  );
+
+  return { goals, todos, loading, add, toggle, edit, remove, moveMany };
 }

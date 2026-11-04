@@ -15,6 +15,10 @@ type Options = {
   revision: number;
   toggle: (todo: Todo) => Promise<boolean>;
   edit: (todo: Todo, patch: { date: number }) => Promise<boolean>;
+  moveMany: (
+    list: Todo[],
+    target: number,
+  ) => Promise<{ moved: number; failed: Todo[] }>;
 };
 
 function daysAgo(n: number): number {
@@ -32,6 +36,7 @@ export function useOverdue({
   revision,
   toggle,
   edit,
+  moveMany,
 }: Options) {
   const api = useMemo(() => createApi(token), [token]);
   const [fetched, setFetched] = useState<Todo[]>([]);
@@ -79,5 +84,18 @@ export function useOverdue({
     [settle, edit],
   );
 
-  return { overdue, done, moveToToday };
+  /** 밀린 할 일을 모두 target 날로. 목록에서 먼저 빼고, 실패한 것만 되돌린다 */
+  const postponeAll = useCallback(
+    async (target: number) => {
+      const ids = new Set(overdue.map((t) => t.id));
+      setFetched((list) => list.filter((t) => !ids.has(t.id)));
+      const result = await moveMany(overdue, target);
+      if (result.failed.length > 0)
+        setFetched((list) => [...list, ...result.failed]);
+      return result;
+    },
+    [overdue, moveMany],
+  );
+
+  return { overdue, done, moveToToday, postponeAll };
 }

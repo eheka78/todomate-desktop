@@ -13,6 +13,7 @@ type Props = {
   overdue: Todo[];
   onOverdueDone: (todo: Todo) => void;
   onMoveToToday: (todo: Todo) => void;
+  onPostponeOverdue: (date: number) => void;
   mode: ThemeMode;
   accent: string;
   onModeChange: (mode: ThemeMode) => void;
@@ -28,6 +29,7 @@ export default function Sidebar({
   overdue,
   onOverdueDone,
   onMoveToToday,
+  onPostponeOverdue,
   onLogout,
   ...theme
 }: Props) {
@@ -62,6 +64,7 @@ export default function Sidebar({
         onSelectDate={onSelect}
         onDone={onOverdueDone}
         onMoveToToday={onMoveToToday}
+        onPostponeAll={onPostponeOverdue}
       />
       <div className="sidebar-footer">
         <ThemeControls {...theme} />
