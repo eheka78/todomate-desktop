@@ -12,6 +12,8 @@ function errorMessage(e: unknown): string {
     if (e.status === 401) return "이메일 또는 비밀번호가 맞지 않아요";
     if (e.status === 429)
       return "로그인 시도가 너무 많아요. 잠시 후 다시 해 주세요";
+    // 서버는 응답했으니 연결 문제가 아니다. 원인을 그대로 보여 준다
+    return `로그인에 실패했어요 (${e.status} ${e.message})`;
   }
   return "API 서버에 연결할 수 없어요. 서버가 켜져 있는지 확인해 주세요";
 }
